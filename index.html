@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marcos Prime English Course</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: #000;
+      color: #f4f4f4;
+      height: 100%;
+      overflow: hidden;
+    }
+    .login-container, .main-container, .beginner-container, .intermediate-container, .advanced-container {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      position: relative;
+    }
+    .login-container {
+      background: rgba(0, 0, 0, 0.6);
+    }
+    .main-container, .beginner-container, .intermediate-container, .advanced-container {
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS92hdbAsE5YFKtDK1KdIZ1W9JhhkeQqPlylw&s') 
+        no-repeat center center fixed;
+      background-size: cover;
+    }
+    .login-container.active, .main-container.active, .beginner-container.active, .intermediate-container.active, .advanced-container.active {
+      display: flex;
+    }
+    .login-box {
+      background: #1e1e1e;
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+      text-align: center;
+      width: 90%;
+      max-width: 360px;
+      animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes zoomIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .main-container.zoom-effect, .beginner-container.zoom-effect, .intermediate-container.zoom-effect, .advanced-container.zoom-effect {
+      animation: zoomIn 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+    .login-box h1 {
+      font-size: 1.4em;
+      color: #2a9d8f;
+      margin-bottom: 20px;
+      font-weight: 600;
+    }
+    input[type="password"] {
+      padding: 12px;
+      width: 100%;
+      margin-bottom: 18px;
+      border: none;
+      border-radius: 10px;
+      background-color: #2c2c2c;
+      color: #fff;
+      font-size: 1em;
+    }
+    input[type="password"]:focus {
+      outline: 2px solid #2a9d8f;
+    }
+    button {
+      padding: 20px 40px;
+      width: 280px;
+      border: none;
+      background: linear-gradient(135deg, #2a9d8f, #21867a);
+      color: white;
+      font-size: 1.4em;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    button:hover {
+      background: linear-gradient(135deg, #21867a, #1f6d65);
+      transform: scale(1.05);
+    }
+    .error {
+      color: #ff4c4c;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .welcome-message {
+      display: none;
+      margin-top: 14px;
+      color: #2a9d8f;
+      font-weight: bold;
+      font-size: 1em;
+    }
+    h1 {
+      font-size: 2.6em;
+      margin-bottom: 40px;
+      font-weight: 600;
+      animation: fadeIn 1.2s ease;
+      text-align: center;
+    }
+    .level-buttons, .beginner-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+      justify-content: flex-start;
+      animation: zoomIn 1s ease forwards;
+      flex-wrap: nowrap;
+    }
+    .scroll-wrapper {
+      height: 80vh;
+      overflow-y: auto;
+      width: 100%;
+      padding-right: 20px;
+      box-sizing: border-box;
+    }
+    .scroll-wrapper::-webkit-scrollbar {
+      width: 10px;
+    }
+    .scroll-wrapper::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .scroll-wrapper::-webkit-scrollbar-thumb {
+      background-color: #2a9d8f;
+      border-radius: 5px;
+    }
+    .top-bar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 5;
+    }
+    .top-bar img {
+      max-width: 80px;
+      border-radius: 50%;
+    }
+    .top-bar button {
+      width: auto;
+      padding: 10px 20px;
+      font-size: 1em;
+    }
+    @media (max-width: 480px) {
+      .login-box h1 {
+        font-size: 1.1em;
+      }
+      .level-buttons button, .beginner-buttons button {
+        width: 90%;
+        font-size: 1.2em;
+        padding: 15px;
+      }
+      .scroll-wrapper {
+        padding-right: 10px;
+      }
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.8em;
+      color: #999;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container active" id="login">
+    <div class="login-box">
+      <img src="https://i.postimg.cc/pr0cjPYW/MP-EC-white.png" alt="Logo Marcos Prime" style="max-width: 120px; margin-bottom: 20px; border-radius: 50%;">
+      <h1>Marcos Prime English Course</h1>
+      <div id="error-message" class="error">Senha incorreta</div>
+      <input type="password" id="password" placeholder="Insere a senha" />
+      <button onclick="login()">Entrar</button>
+      <div class="welcome-message" id="welcome-message">Correto, agora você é da Marcos Prime!</div>
+    </div>
+  </div>
+  <div class="main-container" id="main">
+    <div>
+      <h1>Escolhe o teu nível</h1>
+      <div class="level-buttons">
+        <button onclick="showBeginner()">Beginner</button>
+        <button onclick="showIntermediate()">Intermediate</button>
+        <button onclick="showAdvanced()">Advanced</button>
+      </div>
+    </div>
+  </div>
+  <div class="beginner-container" id="beginner">
+    <div class="top-bar">
+      <img src="https://i.postimg.cc/pr0cjPYW/MP-EC-white.png" alt="Logo Marcos Prime">
+      <button onclick="goBack()">Voltar</button>
+    </div>
+    <div class="scroll-wrapper">
+      <div class="beginner-buttons">
+        <button>Easy Presentation</button>
+        <button>Greetings and Farewells</button>
+        <button>Personal Pronouns</button>
+        <button>Possessive Pronouns</button>
+        <button>Reflexive Pronouns</button>
+        <button>Numbers and Dates</button>
+        <button>Family Vocabulary</button>
+        <button>Daily Routine</button>
+        <button>Food and Drinks</button>
+        <button>Prepositions of Place</button>
+        <button>There is / There are</button>
+        <button>Basic Verbs</button>
+        <button>Clothes and Colours</button>
+        <button>Weather</button>
+        <button>Jobs and Professions</button>
+        <button>Simple Present</button>
+        <button>Time Expressions</button>
+        <button>Basic Conversations</button>
+      </div>
+    </div>
+  </div>
+  <audio autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2023/03/12/audio_6cf006ee08.mp3?filename=ambient-piano-and-strings-141979.mp3" type="audio/mpeg">
+    O teu navegador não suporta áudio em HTML5.
+  </audio>
+  <script>
+    function login() {
+      const passwordInput = document.getElementById('password');
+      const errorMessage = document.getElementById('error-message');
+      const welcomeMessage = document.getElementById('welcome-message');
+
+      if (passwordInput.value === 'marcosprime07') {
+        errorMessage.style.display = 'none';
+        welcomeMessage.style.display = 'block';
+        setTimeout(() => {
+          document.getElementById('login').classList.remove('active');
+          const main = document.getElementById('main');
+          main.classList.add('active', 'zoom-effect');
+        }, 800);
+      } else {
+        errorMessage.style.display = 'block';
+      }
+    }
+
+    function showBeginner() {
+      document.getElementById('main').classList.remove('active');
+      const beginner = document.getElementById('beginner');
+      beginner.classList.add('active', 'zoom-effect');
+    }
+
+    function goBack() {
+      document.querySelectorAll('.beginner-container, .intermediate-container, .advanced-container').forEach(el => {
+        el.classList.remove('active', 'zoom-effect');
+      });
+      document.getElementById('main').classList.add('active', 'zoom-effect');
+    }
+  </script>
+</body>
+</html>
