@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcos Prime English Course</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+            overflow: hidden; /* Esconde o overflow da BODY/HTML para evitar scroll indesejado em toda a página */
+            position: relative; /* Permite que o pseudo-elemento overlay funcione */
+            background-color: #000; /* Fundo preto inicial para a tela de login */
+        }
+
+        /* Camada de Escurecimento (Overlay) e Imagem de Fundo (Inicialmente invisíveis) */
+        body.logged-in {
+            background-image: url('https://media.istockphoto.com/id/1012501180/photo/old-globe-on-bookshelf-background.jpg?s=612x612&w=0&k=20&c=HOAI1Yti25ekVOK4u1d8jkav2OzkHk5TrN6nTFCUdLQ='); /* Imagem de alta resolução */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        body.logged-in::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 1); /* Cor preta com 75% de opacidade para escurecer a bandeira */
+            z-index: -999; /* Garante que o overlay fique atrás do conteúdo, mas acima da imagem de fundo */
+        }
+
+        /* Container Management - Todas as telas principais */
+        .container {
+            display: none; /* Todos os contêineres principais começam escondidos */
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Ocupa 100% da altura da viewport */
+            flex-direction: column;
+            padding: 20px;
+            text-align: center;
+            position: absolute; /* Posicionamento absoluto para cobrir a tela */
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: transparent; /* Permite ver o fundo da bandeira */
+            z-index: 1; /* Garante que os containers fiquem acima do overlay */
+            overflow-y: auto; /* Permite scroll SOMENTE na tela ATIVA, se o conteúdo for maior */
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+
+        /* Esconde a barra de scroll para Webkit (Chrome, Safari) */
+        .container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* MUITO IMPORTANTE AQUI: Garante que o contêiner ativo seja exibido e por cima dos outros */
+        .container.container-active {
+            display: flex; /* Mostra o container ativo */
+            z-index: 2; /* Coloca a tela ativa na frente das outras */
+        }
+
+        /* Estilo do Logo */
+        .logo {
+            width: 100px;
+            height: 100px;
+            background-image: url('https://i.postimg.cc/pr0cjPYW/MP-EC-white.png');
+            background-size: cover;
+            background-position: center;
+            margin: 0 auto 24px;
+            border-radius: 12px;
+            display: block;
+        }
+
+        .logo.round {
+            border-radius: 50%;
+        }
+
+        /* Títulos */
+        h1, h2, h3 {
+            font-weight: 600;
+            margin-bottom: 24px;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7); /* Garante que os títulos se destacam */
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+        }
+
+        /* Inputs e Textareas */
+        input[type="password"],
+        input[type="text"],
+        textarea {
+            padding: 12px;
+            width: 100%;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 20px;
+            background-color: rgba(26, 26, 26, 0.7); /* Fundo um pouco transparente */
+            color: #fff;
+            font-size: 1rem;
+            resize: vertical;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #bbb; /* Placeholder mais claro para contraste */
+        }
+
+        /* Botões (Geral) */
+        button {
+            padding: 12px;
+            width: 100%;
+            background-color: rgba(68, 68, 68, 0.8); /* Botões um pouco transparentes */
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: rgba(102, 102, 102, 0.9);
+        }
+
+        /* Específicos da Caixa de Login */
+        #login-container {
+            background: transparent; /* Permite ver o fundo do body (que será preto) */
+        }
+
+        .login-box {
+            background-color: rgba(17, 17, 17, 0.85); /* Fundo da caixa de login um pouco transparente */
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.05);
+            max-width: 360px;
+            width: 100%;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 0.95rem;
+            min-height: 22px;
+            color: #e74c3c;
+        }
+
+        /* Layout da Tela de Boas-Vindas */
+        #welcome-screen {
+            justify-content: flex-start;
+            padding-top: 40px;
+            align-items: flex-start;
+        }
+
+        #welcome-screen .top-bar {
+            width: 100%;
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 30px;
+            padding-left: 20px;
+        }
+
+        #welcome-screen .logo {
+            margin: 0;
+            border-radius: 50%;
+        }
+
+        .main-layout {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-grow: 1;
+            gap: 40px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .left-side {
+            flex: 1;
+            min-width: 300px;
+            max-width: 560px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .video-wrapper {
+            background-color: rgba(51, 51, 51, 0.7); /* Fundo do vídeo um pouco transparente */
+            height: 280px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            color: #888;
+            font-size: 1.2rem;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        .video-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            border: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .action-buttons button {
+            flex-grow: 1;
+            padding: 10px 24px;
+        }
+
+        .right-side {
+            flex: 1;
+            min-width: 300px;
+            max-width: 400px;
+            text-align: left;
+            background-color: rgba(0, 0, 0, 0.6); /* Fundo transparente para o texto na direita */
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        .right-side p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #ccc;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        /* Telas de Seleção de Nível */
+        #level-screen {
+            justify-content: flex-start;
+            padding-top: 40px;
+        }
+
+        .level-buttons-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            margin-top: 40px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .level-buttons-vertical button {
+            padding: 24px 60px;
+            font-size: 1.4rem;
+        }
+
+        /* Tela de Recusa */
+        #decline-screen {
+            justify-content: flex-start;
+            padding-top: 60px;
+        }
+
+        .decline-logo {
+            width: 100px;
+            height: 100px;
+            background-image: url('https://i.postimg.cc/pr0cjPYW/MP-EC-white.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            margin-bottom: 30px;
+            display: block;
+        }
+
+        .decline-content {
+            max-width: 700px;
+            background-color: rgba(0, 0, 0, 0.6); /* Fundo transparente para o texto */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        .decline-content p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #ccc;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        /* Contêineres de Curso (Beginner, Intermediate, Advanced) */
+        .course-container h1 {
+            margin-bottom: 30px;
+        }
+
+        /* Regra para o scroll dos botões de aulas */
+        .course-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            width: 100%;
+            max-width: 300px;
+            max-height: calc(100vh - 200px); /* Altura máxima baseada na viewport, subtraindo espaço para título/logo/padding */
+            overflow-y: auto; /* Adiciona scroll vertical se exceder a altura */
+            padding-right: 10px; /* Espaço para a barra de scroll não sobrepor o conteúdo */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .course-buttons::-webkit-scrollbar {
+            display: none;
+        }
+
+        .course-buttons button {
+            padding: 18px 32px;
+            font-size: 1.2rem;
+            background-color: rgba(34, 34, 34, 0.8); /* Botões de curso um pouco transparentes */
+        }
+
+        .course-buttons button:hover {
+            background-color: rgba(68, 68, 68, 0.9);
+        }
+
+        /* Telas Específicas de Aula (Easy Presentation, Materia, Video, Tarefa) */
+        .lesson-home .logo, .tela .logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 30px;
+        }
+
+        .lesson-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 300px;
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            padding-right: 10px;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .lesson-menu::-webkit-scrollbar {
+            display: none;
+        }
+
+        .lesson-menu button {
+            padding: 24px 60px;
+            font-size: 1.4rem;
+        }
+
+        .tela p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: #ccc;
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: rgba(0, 0, 0, 0.6); /* Fundo transparente para o texto de matéria */
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        .tela p ul {
+            list-style-position: inside;
+            text-align: left;
+            margin-top: 15px;
+            padding-left: 20px;
+        }
+        .tela p ul li {
+            margin-bottom: 8px;
+        }
+
+        .video-player {
+            max-width: 560px;
+            width: 100%;
+            margin: 0 auto 30px;
+            background-color: rgba(0, 0, 0, 0.7); /* Fundo para o player de vídeo */
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            text-align: left;
+            background-color: rgba(0, 0, 0, 0.7); /* Fundo transparente para o formulário de tarefa */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.4);
+        }
+
+        form label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        button[type="submit"] {
+            padding: 16px;
+            font-size: 1.2rem;
+            background-color: rgba(0, 120, 215, 0.8); /* Cor azul mais transparente */
+            margin-top: 20px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: rgba(0, 95, 163, 0.9);
+        }
+
+        #mensagem-envio {
+            margin-top: 30px;
+            font-weight: 500;
+            text-align: center;
+            font-size: 1.05rem;
+            color: #fff;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        /* Botão de Voltar */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: auto;
+            padding: 10px 15px;
+            background-color: rgba(51, 51, 51, 0.7); /* Botão de voltar transparente */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+            z-index: 100; /* Garante que o botão esteja sempre na frente */
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        .back-button:hover {
+            background-color: rgba(85, 85, 85, 0.9);
+        }
+
+        /* Ajustes Responsivos */
+        @media (max-width: 768px) {
+            .main-layout {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .left-side, .right-side {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .level-buttons-vertical button {
+                width: 100%;
+            }
+
+            .course-buttons, .lesson-menu { /* Ajuste responsivo para scroll */
+                max-height: calc(100vh - 160px); /* Menos espaço para elementos superiores no mobile */
+            }
+
+            .course-buttons button,
+            .lesson-menu button {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            #welcome-screen .top-bar {
+                justify-content: center;
+                padding-left: 0;
+            }
+
+            .back-button {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+
+            .right-side, .decline-content, .tela p, form, .video-player {
+                padding: 15px; /* Menor padding em mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="login-container" class="container container-active">
+        <div class="login-box">
+            <div class="logo"></div>
+            <h2>Login Marcos Prime English Course</h2>
+            <input type="password" id="senha" placeholder="Digite a senha" />
+            <button onclick="verificarSenha()">Entrar</button>
+            <div class="message" id="mensagem"></div>
+        </div>
+    </div>
+
+    <div id="welcome-screen" class="container">
+        <div class="top-bar">
+            <div class="logo round"></div>
+        </div>
+
+        <div class="main-layout">
+            <div class="left-side">
+                <div class="video-wrapper">
+                    <span>Vídeo de Apresentação Indisponível</span>
+                </div>
+                <div class="action-buttons">
+                    <button onclick="entrarBoasVindas()">Entrar</button>
+                    <button onclick="recusarBoasVindas()">Recusar</button>
+                </div>
+            </div>
+
+            <div class="right-side">
+                <h3>Apresentação do projeto</h3>
+                <p>
+                    O <strong>Marcos Prime English Course</strong> foi criado para te guiar na jornada da fluência.
+                    Com abordagem prática e progressiva, você escolhe seu nível e evolui com conteúdo original e direcionado.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="level-screen" class="container">
+        <div class="logo round"></div>
+        <h1>Escolha seu nível</h1>
+        <div class="level-buttons-vertical">
+            <button onclick="abrirNivelCurso('beginner')">Beginner</button>
+            <button onclick="abrirNivelCurso('intermediate')">Intermediate</button>
+            <button onclick="abrirNivelCurso('advanced')">Advanced</button>
+        </div>
+    </div>
+
+    <div id="decline-screen" class="container">
+        <div class="decline-logo"></div>
+        <div class="decline-content">
+            <h2>Entendemos sua escolha</h2>
+            <p>
+                Nem todos estão dispostos a visualizar novos horizontes.
+                Mas saiba que estamos sempre aqui para ajudar você a desenvolver habilidades
+                que serão de grande vantagem quando estiver pronto.
+            </p>
+        </div>
+    </div>
+
+    <div id="beginner-course" class="container">
+        <button class="back-button" onclick="goToLevelScreen()">Voltar</button>
+        <h1>Aulas — Beginner</h1>
+        <div class="course-buttons">
+            <button onclick="abrirLesson('easy-presentation', 'beginner')">Easy Presentation</button>
+            <button onclick="abrirLesson('greetings-farewells', 'beginner')">Greetings and Farewells</button>
+            <button onclick="abrirLesson('personal-pronouns', 'beginner')">Personal Pronouns</button>
+            <button onclick="abrirLesson('possessive-pronouns', 'beginner')">Possessive Pronouns</button>
+            <button onclick="abrirLesson('reflexive-pronouns-b', 'beginner')">Reflexive Pronouns</button>
+            <button onclick="abrirLesson('demonstrative-pronouns', 'beginner')">Demonstrative Pronouns</button>
+            <button onclick="abrirLesson('interrogative-pronouns', 'beginner')">Interrogative Pronouns</button>
+            <button onclick="abrirLesson('verbs', 'beginner')">Verbs</button>
+            <button onclick="abrirLesson('how-to-make-a-sentence', 'beginner')">How to make a sentence</button>
+            <button onclick="abrirLesson('easy-essential-vocabulary', 'beginner')">Easy and Essential Vocabulary</button>
+            <button onclick="abrirLesson('regular-verbs', 'beginner')">Regular Verbs</button>
+            <button onclick="abrirLesson('irregular-verbs', 'beginner')">Irregular Verbs</button>
+            <button onclick="abrirLesson('linking-words', 'beginner')">Linking Words</button>
+            <button onclick="abrirLesson('active-passive-voice', 'beginner')">Active and Passive Voice</button>
+            <button onclick="abrirLesson('adverbs-frequency', 'beginner')">Adverbs of Frequency</button>
+            <button onclick="abrirLesson('reflexive-pronouns-b2', 'beginner')">Reflexive Pronouns (Repetição/Outro)</button>
+        </div>
+    </div>
+
+    <div id="intermediate-course" class="container">
+        <button class="back-button" onclick="goToLevelScreen()">Voltar</button>
+        <h1>Aulas — Intermediate</h1>
+        <div class="course-buttons">
+            <button onclick="abrirLesson('past-perfect-continuous', 'intermediate')">Past Perfect Continuous</button>
+            <button onclick="abrirLesson('conditional-sentences', 'intermediate')">Conditional Sentences</button>
+            <button onclick="abrirLesson('reported-speech', 'intermediate')">Reported Speech</button>
+            <button onclick="abrirLesson('modal-verbs-context', 'intermediate')">Modal Verbs in Context</button>
+            <button onclick="abrirLesson('reading-strategies', 'intermediate')">Reading Strategies</button>
+            <button onclick="abrirLesson('idiomatic-expressions', 'intermediate')">Idiomatic Expressions</button>
+            <button onclick="abrirLesson('relative-clauses', 'intermediate')">Relative Clauses</button>
+            <button onclick="abrirLesson('word-formation', 'intermediate')">Word Formation</button>
+        </div>
+    </div>
+
+    <div id="advanced-course" class="container">
+        <button class="back-button" onclick="goToLevelScreen()">Voltar</button>
+        <h1>Aulas — Advanced</h1>
+        <div class="course-buttons">
+            <button onclick="abrirLesson('essay-structure-cohesion', 'advanced')">Essay Structure & Cohesion</button>
+            <button onclick="abrirLesson('advanced-argumentation', 'advanced')">Advanced Argumentation</button>
+            <button onclick="abrirLesson('figurative-language', 'advanced')">Figurative Language</button>
+            <button onclick="abrirLesson('advanced-listening-skills', 'advanced')">Advanced Listening Skills</button>
+            <button onclick="abrirLesson('formal-informal-register', 'advanced')">Formal vs Informal Register</button>
+            <button onclick="abrirLesson('academic-vocabulary', 'advanced')">Academic Vocabulary</button>
+            <button onclick="abrirLesson('discourse-markers', 'advanced')">Discourse Markers</button>
+            <button onclick="abrirLesson('critical-thinking-tasks', 'advanced')">Critical Thinking Tasks</button>
+        </div>
+    </div>
+
+    <div id="aula-easy-presentation-lesson" class="container lesson-home">
+        <button class="back-button" onclick="goToCourseScreen(currentCourseLevel)">Voltar</button>
+        <div class="logo round"></div>
+        <h1>Easy Presentation</h1>
+        <div class="lesson-menu">
+            <button onclick="abrirLessonContent('easy-presentation-materia')">Matéria</button>
+            <button onclick="abrirLessonContent('easy-presentation-video')">Vídeo-explicação</button>
+            <button onclick="abrirLessonContent('easy-presentation-tarefa')">Tarefa</button>
+        </div>
+    </div>
+
+    <div id="aula-greetings-farewells-lesson" class="container lesson-home">
+        <button class="back-button" onclick="goToCourseScreen(currentCourseLevel)">Voltar</button>
+        <div class="logo round"></div>
+        <h1>Greetings and Farewells</h1>
+        <div class="lesson-menu">
+            <button onclick="abrirLessonContent('greetings-farewells-materia')">Matéria</button>
+            <button onclick="abrirLessonContent('greetings-farewells-video')">Vídeo-explicação</button>
+            <button onclick="abrirLessonContent('greetings-farewells-tarefa')">Tarefa</button>
+        </div>
+    </div>
+
+    <div id="aula-personal-pronouns-lesson" class="container lesson-home">
+        <button class="back-button" onclick="goToCourseScreen(currentCourseLevel)">Voltar</button>
+        <div class="logo round"></div>
+        <h1>Personal Pronouns</h1>
+        <div class="lesson-menu">
+            <button onclick="abrirLessonContent('personal-pronouns-materia')">Matéria</button>
+            <button onclick="abrirLessonContent('personal-pronouns-video')">Vídeo-explicação</button>
+            <button onclick="abrirLessonContent('personal-pronouns-tarefa')">Tarefa</button>
+        </div>
+    </div>
+
+    <div id="aula-past-perfect-continuous-lesson" class="container lesson-home">
+        <button class="back-button" onclick="goToCourseScreen(currentCourseLevel)">Voltar</button>
+        <div class="logo round"></div>
+        <h1>Past Perfect Continuous</h1>
+        <div class="lesson-menu">
+            <button onclick="abrirLessonContent('past-perfect-continuous-materia')">Matéria</button>
+            <button onclick="abrirLessonContent('past-perfect-continuous-video')">Vídeo-explicação</button>
+            <button onclick="abrirLessonContent('past-perfect-continuous-tarefa')">Tarefa</button>
+        </div>
+    </div>
+
+    <div id="easy-presentation-materia" class="container tela">
+        <button class="back-button" onclick="goToLessonHome()">Voltar</button>
+        <div class="logo round"></div>
+        <h2>Matéria — Easy Presentation</h2>
+        <p>
+            Apresentações pessoais básicas em inglês envolvem frases como “My name is...”, “I am from...”, “Nice to meet you”, etc.
+            O objetivo é saber se apresentar com confiança usando vocabulário simples e correto.
+            <br><br>
+            <strong>Exemplos:</strong>
+            <ul>
+                <li>Hello, my name is [Seu Nome].</li>
+                <li>I am from [Seu País/Cidade].</li>
+                <li>It's nice to meet you.</li>
+                <li>What's your name?</li>
+                <li>Where are you from?</li>
+            </ul>
+            <strong>Dica:</strong> Pratique essas frases em voz alta. A repetição ajuda a memorizar e a sentir-se mais confortável.
+        </p>
+    </div>
+
+    <div id="easy-presentation-video" class="container tela">
+        <button class="back-button" onclick="goToLessonHome()">Voltar</button>
+        <div class="logo round"></div>
+        <h2>Vídeo-explicação — Easy Presentation</h2>
+        <div class="video-player">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <div id="easy-presentation-tarefa" class="container tela">
+        <button class="back-button" onclick="goToLessonHome()">Voltar</button>
+        <div class="logo round"></div>
+        <h2>Tarefa — Easy Presentation</h2>
+        <form onsubmit="enviarTarefa(event, 'Easy Presentation')">
+            <label for="aluno-easy-presentation">Seu nome:</label>
+            <input type="text" id="aluno-easy-presentation" placeholder="Digite seu nome" required />
+
+            <label for="q1-easy-presentation">1. Como você diz “Meu nome é João” em inglês?</label>
+            <textarea id="q1-easy-presentation" required></textarea>
+
+            <label for="q2-easy-presentation">2. Qual a frase correta para dizer de onde você é?</label>
+            <textarea id="q2-easy-presentation" required></textarea>
+
+            <label for="q3-easy-presentation">3. Escreva uma saudação educada em inglês.</label>
+            <textarea id="q3-easy-presentation" required></textarea>
+
+            <button type="submit">Enviar Respostas</button>
+        </form>
+        <div id="mensagem-envio"></div>
+    </div>
+
+    <div id="greetings-farewells-materia" class="container tela">
+        <button class="back-button" onclick="goToLessonHome()">Voltar</button>
+        <div class="logo round"></div>
+        <h2>Matéria — Greetings and Farewells</h2>
+        <p>
+            Aprender saudações e despedidas é fundamental para qualquer interação em inglês.
+            <br><br>
+            <strong>Saudações (Greetings):</strong>
+            <ul>
+                <li>Hello / Hi (Olá)</li>
+                <li>Good morning (Bom dia)</li>
+                <li>Good afternoon (Boa tarde)</li>
+                <li>Good evening (Boa noite - ao chegar)</li>
+                <li>How are you? (Como você está?)</li>
+                <li>I'm fine, thanks. And you? (Estou bem, obrigado. E você?)</li>
+            </ul>
+            <strong>Despedidas (Farewells):</strong>
+            <ul>
+                <li>Goodbye / Bye (Adeus / Tchau)</li>
+                <li>Good night (Boa noite - ao ir embora/dormir)</li>
+                <li>See you later (Até mais tarde)</li>
+                <li>Have a good day (Tenha um bom dia)</li>
+                <li>Take care (Se cuida)</li>
+            </ul>
+        </p>
+    </div>
+
+    <div id="greetings-farewells-video" class="container tela">
+        <button class="back-button" onclick="goToLessonHome()">Voltar</button>
+        <div class="logo round"></div>
+        <h2>Vídeo-explicação — Greetings and Farewells</h2>
+        <div class="video-player">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <div id="greetings-farewells-tarefa" class="container tela">
+        <button class="back-button" onclick="goToLessonHome()">Voltar</button>
+        <div class="logo round"></div>
+        <h2>Tarefa — Greetings and Farewells</h2>
+        <form onsubmit="enviarTarefa(event, 'Greetings and Farewells')">
+            <label for="aluno-greetings-farewells">Seu nome:</label>
+            <input type="text" id="aluno-greetings-farewells" placeholder="Digite seu nome" required />
+
+            <label for="q1-greetings">1. Qual a diferença entre "Good evening" e "Good night"?</label>
+            <textarea id="q1-greetings" required></textarea>
+
+            <label for="q2-greetings">2. Escreva uma breve conversa usando pelo menos uma saudação e uma despedida.</label>
+            <textarea id="q2-greetings" required></textarea>
+
+            <label for="q3-greetings">3. Como você diria "Tenha um bom dia" em inglês?</label>
+            <textarea id="q3-greetings" required></textarea>
+
+            <button type="submit">Enviar Respostas</button>
+        </form>
+        <div id="mensagem-envio"></div>
+    </div>
+
+    <div id="personal-pronouns-materia" class="container tela">
+        <button class="back-button" onclick="goToLessonHome()">Voltar</button>
+        <div class="logo round"></div>
+        <h2>Matéria — Personal Pronouns</h2>
+        <p>
+            Pronomes pessoais são usados para substituir nomes, evitando repetições e tornando a fala mais fluida.
+            <br><br>
+            <strong>Subject Pronouns (Sujeito da frase):</strong>
+            <ul>
+                <li>I (Eu)</li>
+                <li>You (Você/Vocês)</li>
+                <li>He (Ele)</li>
+                <li>She (Ela)</li>
+                <li>It (Ele/Ela para coisas/animais/ideias)</li>
+                <li>We (Nós)</li>
+                <li>They (Eles/Elas)</li>
+            </ul>
+            <strong>Object Pronouns (Objeto da frase):</strong>
+            <ul>
+                <li>Me (Me/Mim)</li>
+                <li>You (Te/Você/Vocês)</li>
+                <li>Him (Lhe/Ele)</li>
+                <li>Her (Lhe/Ela)</li>
+                <li>It (Lhe/Isso)</li>
+                <li>Us (Nos/Nós)</li>
+                <li>Them (Lhes/Eles/Elas)</li>
+            </ul>
+            <strong>Exemplos:</strong>
+            <ul>
+                <li><strong>Subject:</strong> <em>She</em> is happy. (Ela está feliz.)</li>
+                <li><strong>Object:</strong> I saw <em>her</em>. (Eu a vi.)</li>
+            </ul>
+        </p>
+    </div>
+
+    <div id="personal-pronouns-video" class="container tela">
+        <button class="back-button" onclick="goToLessonHome()">Voltar</button>
+        <div class="logo round"></div>
+        <h2>Vídeo-explicação — Personal Pronouns</h2>
+        <div class="video-player">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <div id="personal-pronouns-tarefa" class="container tela">
+        <button class="back-button" onclick="goToLessonHome()">Voltar</button>
+        <div class="logo round"></div>
+        <h2>Tarefa — Personal Pronouns</h2>
+        <form onsubmit="enviarTarefa(event, 'Personal Pronouns')">
+            <label for="aluno-personal-pronouns">Seu nome:</label>
+            <input type="text" id="aluno-personal-pronouns" placeholder="Digite seu nome" required />
+
+            <label for="q1-personal-pronouns">1. Substitua o nome por um pronome sujeito: "Maria é inteligente."</label>
+            <textarea id="q1-personal-pronouns" required></textarea>
+
+            <label for="q2-personal-pronouns">2. Substitua o nome por um pronome objeto: "Eu vi Pedro no parque."</label>
+            <textarea id="q2-personal-pronouns" required></textarea>
+
+            <label for="q3-personal-pronouns">3. Crie uma frase usando o pronome "It".</label>
+            <textarea id="q3-personal-pronouns" required></textarea>
+
+            <button type="submit">Enviar Respostas</button>
+        </form>
+        <div id="mensagem-envio"></div>
+    </div>
+
+    <div id="past-perfect-continuous-materia" class="container tela">
+        <button class="back-button" onclick="goToLessonHome()">Voltar</button>
+        <div class="logo round"></div>
+        <h2>Matéria — Past Perfect Continuous</h2>
+        <p>
+            O **Past Perfect Continuous** (Passado Perfeito Contínuo) é usado para indicar uma ação contínua que começou no passado e continuou até outro ponto no passado. Ele enfatiza a duração da ação.
+            <br><br>
+            **Estrutura:** Sujeito + had been + verbo principal no gerúndio (-ing)
+            <br><br>
+            **Exemplos:**
+            <ul>
+                <li>She **had been studying** for three hours before she took a break. (Ela estava estudando por três horas antes de fazer uma pausa.)</li>
+                <li>They **had been living** in London for ten years when they decided to move. (Eles estavam morando em Londres por dez anos quando decidiram se mudar.)</li>
+                <li>I **had been waiting** for him for an hour when he finally arrived. (Eu estava esperando por ele por uma hora quando ele finalmente chegou.)</li>
+            </ul>
+            **Uso:**
+            <ul>
+                <li>Para mostrar a causa de algo no passado. Ex: *The ground was wet because it had been raining.* (O chão estava molhado porque estava chovendo.)</li>
+                <li>Para ações que terminaram pouco antes de outro evento no passado.</li>
+            </ul>
+            **Dica:** É frequentemente usado com expressões de tempo como "for" (por) e "since" (desde).
+        </p>
+    </div>
+
+    <div id="past-perfect-continuous-video" class="container tela">
+        <button class="back-button" onclick="goToLessonHome()">Voltar</button>
+        <div class="logo round"></div>
+        <h2>Vídeo-explicação — Past Perfect Continuous</h2>
+        <div class="video-player">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <div id="past-perfect-continuous-tarefa" class="container tela">
+        <button class="back-button" onclick="goToLessonHome()">Voltar</button>
+        <div class="logo round"></div>
+        <h2>Tarefa — Past Perfect Continuous</h2>
+        <form onsubmit="enviarTarefa(event, 'Past Perfect Continuous')">
+            <label for="aluno-past-perfect-continuous">Seu nome:</label>
+            <input type="text" id="aluno-past-perfect-continuous" placeholder="Digite seu nome" required />
+
+            <label for="q1-past-perfect-continuous">1. Formule uma frase usando o Past Perfect Continuous.</label>
+            <textarea id="q1-past-perfect-continuous" required></textarea>
+
+            <label for="q2-past-perfect-continuous">2. Complete a frase: "He was tired because he ______ all night." (study)</label>
+            <textarea id="q2-past-perfect-continuous" required></textarea>
+
+            <label for="q3-past-perfect-continuous">3. Qual a diferença entre Past Perfect e Past Perfect Continuous?</label>
+            <textarea id="q3-past-perfect-continuous" required></textarea>
+
+            <button type="submit">Enviar Respostas</button>
+        </form>
+        <div id="mensagem-envio"></div>
+    </div>
+
+    <script>
+        // Variáveis para controlar o estado da navegação
+        let currentActiveScreenId = 'login-container';
+        let currentCourseLevel = ''; // 'beginner', 'intermediate', 'advanced'
+        let currentLessonId = ''; // e.g., 'easy-presentation'
+
+        // Função para mostrar uma tela e esconder as outras
+        function showScreen(screenId) {
+            // Esconde todas as telas
+            document.querySelectorAll('.container').forEach(container => {
+                container.classList.remove('container-active');
+            });
+            // Mostra a tela desejada
+            document.getElementById(screenId).classList.add('container-active');
+            currentActiveScreenId = screenId; // Atualiza a tela ativa
+
+            // Lógica para adicionar/remover o fundo da bandeira
+            if (screenId !== 'login-container' && screenId !== 'decline-screen') {
+                document.body.classList.add('logged-in');
+            } else {
+                document.body.classList.remove('logged-in');
+            }
+        }
+
+        // --- Funções de Navegação ---
+
+        // Função de Login
+        function verificarSenha() {
+            const senhaInput = document.getElementById("senha").value;
+            const mensagemDiv = document.getElementById("mensagem");
+            const senhaCorreta = "marcosprime2024"; // Defina sua senha aqui!
+
+            if (senhaInput === senhaCorreta) {
+                mensagemDiv.textContent = "Login bem-sucedido!";
+                mensagemDiv.style.color = "#2ecc71"; // Verde para sucesso
+                // Transita para a tela de boas-vindas
+                setTimeout(() => showScreen('welcome-screen'), 500); // Pequeno atraso para ver a mensagem
+            } else {
+                mensagemDiv.textContent = "Senha incorreta. Tente novamente.";
+                mensagemDiv.style.color = "#e74c3c"; // Vermelho para erro
+            }
+        }
+
+        // Da tela de Boas-Vindas para a seleção de Nível
+        function entrarBoasVindas() {
+            showScreen('level-screen');
+        }
+
+        // Da tela de Boas-Vindas para a tela de Recusa
+        function recusarBoasVindas() {
+            showScreen('decline-screen');
+        }
+
+        // Abre a tela de curso (Beginner, Intermediate, Advanced)
+        function abrirNivelCurso(level) {
+            currentCourseLevel = level;
+            showScreen(level + '-course');
+        }
+
+        // Volta da tela de curso para a seleção de nível
+        function goToLevelScreen() {
+            showScreen('level-screen');
+            currentCourseLevel = ''; // Limpa o nível do curso atual
+        }
+
+        // Abre uma tela de lição específica (e.g., Easy Presentation, Greetings)
+        function abrirLesson(lessonId, level) {
+            currentCourseLevel = level; // Garante que o nível está setado para o botão de voltar
+            currentLessonId = lessonId; // Armazena o ID da lição atual
+            showScreen('aula-' + lessonId + '-lesson');
+        }
+
+        // Volta de uma tela de conteúdo de aula (Matéria, Vídeo, Tarefa) para a home da lição
+        function goToLessonHome() {
+            showScreen('aula-' + currentLessonId + '-lesson');
+        }
+
+        // Volta de uma tela de lição para a tela do curso (e.g., Beginner Course)
+        function goToCourseScreen(level) {
+            showScreen(level + '-course');
+        }
+
+        // Abre o conteúdo específico da lição (Matéria, Vídeo, Tarefa)
+        function abrirLessonContent(contentId) {
+            showScreen(contentId);
+        }
+
+        // --- Funções de Tarefas ---
+        function enviarTarefa(event, lessonName) {
+            event.preventDefault(); // Impede o envio padrão do formulário
+            const form = event.target;
+            const alunoNome = form.querySelector('input[type="text"]').value;
+            let respostas = {};
+
+            // Coleta todas as respostas do formulário
+            form.querySelectorAll('textarea').forEach(textarea => {
+                respostas[textarea.id] = textarea.value;
+            });
+
+            const mensagemEnvioDiv = document.getElementById('mensagem-envio');
+            mensagemEnvioDiv.style.color = '#fff';
+            mensagemEnvioDiv.textContent = `Tarefa de "${lessonName}" enviada por ${alunoNome}. Suas respostas serão avaliadas!`;
+
+            // Você pode adicionar aqui uma lógica para enviar os dados para um servidor,
+            // por exemplo, usando Fetch API ou XMLHttpRequest.
+            console.log(`Tarefa de "${lessonName}" enviada por: ${alunoNome}`);
+            console.log("Respostas:", respostas);
+
+            // Opcional: Resetar o formulário após o envio
+            form.reset();
+        }
+
+        // Define a tela inicial ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            showScreen('login-container');
+        });
+    </script>
+</body>
+</html>
