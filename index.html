@@ -98,7 +98,6 @@
             text-align: center;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.7); /* Garante que os títulos se destacam */
         }
-
         h1 {
             font-size: 2rem;
             margin-bottom: 30px;
@@ -297,8 +296,7 @@
             margin-bottom: 30px;
             display: block;
         }
-
-        .decline-content {
+decline-content {
             max-width: 700px;
             background-color: rgba(0, 0, 0, 0.6); /* Fundo transparente para o texto */
             padding: 30px;
@@ -398,7 +396,7 @@
         }
         .tela p ul li {
             margin-bottom: 8px;
-        }
+            }
 
         .video-player {
             max-width: 560px;
@@ -708,8 +706,10 @@
         <div class="logo round"></div>
         <h2>Vídeo-explicação — Easy Presentation</h2>
         <div class="video-player">
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-        </div>
+<div class="thumb" onclick="showVideoPage('https://www.xvideos.com/video.okihmoo83ec/44911545/0/teen_18_year_old_gets_fucked_in_her_room_while_her_parents_are_at_work')">
+        <img src="">
+        <h3>Lulu Chu e Lauren Phillips mostram as melhores maneiras de resolver conflitos de famílias trocadas</h3>
+      </div>
     </div>
 
     <div id="easy-presentation-tarefa" class="container tela">
@@ -999,8 +999,6 @@
         function abrirLessonContent(contentId) {
             showScreen(contentId);
         }
-
-        // --- Funções de Tarefas ---
         function enviarTarefa(event, lessonName) {
             event.preventDefault(); // Impede o envio padrão do formulário
             const form = event.target;
